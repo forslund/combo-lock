@@ -5,7 +5,8 @@ name: Python package
 
 on:
   push:
-    branches: [ master, tags/* ]
+    branches: [ master ]
+    tags: [ v* ]
   pull_request:
     branches: [ master ]
 
