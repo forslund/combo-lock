@@ -19,6 +19,17 @@ with lock:
 
 ```
 
+A `NamedLock` will save the lock file to shared memory using [memory-tempfile](https://github.com/mbello/memory-tempfile)
+
+```python
+from combo_lock import NamedLock
+
+lock = NamedLock('some_name')
+
+with lock:
+    write_my_shared_resource()
+```
+
 ### History
 
 The combo-lock was originally created for [Mycroft-core](https://github.com/mycroftai/mycroft-core) but as it's been useful in other projects a separate release seemed appropriate.
