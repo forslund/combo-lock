@@ -14,8 +14,9 @@
 #
 from threading import Lock
 from fasteners.process_lock import InterProcessLock
-from os.path import exists
+from os.path import exists, join
 from os import chmod
+from combo_lock.util import get_ram_directory
 
 
 class ComboLock:
@@ -72,3 +73,10 @@ class ComboLock:
     def __exit__(self, _type, value, traceback):
         """ Releases the lock. """
         self.release()
+
+
+class NamedLock(ComboLock):
+    def __init__(self, name):
+        path = join(get_ram_directory("combo_locks"), name + ".lock")
+        super().__init__(path)
+        self.name = name
