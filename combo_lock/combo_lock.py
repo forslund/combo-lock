@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from base64 import b64encode
 from threading import Lock
 from fasteners.process_lock import InterProcessLock
 from os.path import exists, join
@@ -75,8 +76,22 @@ class ComboLock:
         self.release()
 
 
+def _filename_from_name(name):
+    """Create a filesystem safe filename from name.
+
+    Arguments:
+        name (string): name to encode
+
+    Returns:
+        (string) encoded version of the name.
+    """
+    encoded_name = b64encode(name.encode(), altchars=b'-_')
+    return encoded_name.decode() + ".lock"
+
+
 class NamedLock(ComboLock):
     def __init__(self, name):
-        path = join(get_ram_directory("combo_locks"), name + ".lock")
+        filename = _filename_from_name(name)
+        path = join(get_ram_directory("combo_locks"), filename)
         super().__init__(path)
         self.name = name
