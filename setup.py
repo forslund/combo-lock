@@ -48,8 +48,9 @@ setup(
     install_requires=required('requirements.txt'),
     url='https://github.com/forslund/combo-lock',
     license='Apache-2.0',
-    author='Åke Forslund',
-    author_email='ake.forslund@gmail.com',
+    author='Åke Forslund, JarbasAI',
+    author_email='ake.forslund@gmail.com, '
+                 'jarbasai@mailfence.com',
     description='A combined process and thread lock',
     long_description=long_desc,
     long_description_content_type="text/markdown",
