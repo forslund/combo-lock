@@ -14,7 +14,6 @@
 #
 from base64 import b64encode
 from threading import Lock
-from fasteners.process_lock import InterProcessLock
 from os.path import exists, join
 from os import chmod
 from combo_lock.util import get_ram_directory
