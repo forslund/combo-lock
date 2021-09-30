@@ -66,6 +66,7 @@ class TestComboLock(TestCase):
             lock = ComboLock(lock_file)
             success = lock.acquire(False)
             results[idx] = success
+            time.sleep(5)  # Keep the lock held until all threads have run
 
         for i in range(0, 10):
             Thread(target=_test_acquire, args=(i,), daemon=True).start()

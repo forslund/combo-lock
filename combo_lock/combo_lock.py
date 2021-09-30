@@ -18,6 +18,7 @@ from fasteners.process_lock import InterProcessLock
 from os.path import exists, join
 from os import chmod
 from combo_lock.util import get_ram_directory
+from filelock import FileLock, Timeout
 
 
 class ComboLock:
@@ -33,7 +34,7 @@ class ComboLock:
             f = open(path, 'w+')
             f.close()
             chmod(path, 0o777)
-        self.plock = InterProcessLock(path)
+        self.plock = FileLock(path)
         self.tlock = Lock()
 
     def acquire(self, blocking=True):
@@ -51,7 +52,11 @@ class ComboLock:
             if not tlocked:
                 return False
             # Lock process
-            plocked = self.plock.acquire(blocking=False)
+            try:
+                self.plock.acquire(timeout=0.01)
+                plocked = True
+            except Timeout:
+                plocked = False
             if not plocked:
                 # Release thread lock if process couldn't be locked
                 self.tlock.release()
