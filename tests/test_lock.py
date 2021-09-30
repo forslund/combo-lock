@@ -1,6 +1,6 @@
 import os
 from subprocess import Popen
-from tempfile import mktemp
+from tempfile import mktemp, mkstemp
 from threading import Thread
 import time
 from unittest import TestCase
@@ -13,7 +13,8 @@ class TestComboLock(TestCase):
         self.lock_file = mktemp()
 
     def tearDown(self):
-        os.remove(self.lock_file)
+        if os.path.isfile(self.lock_file):
+            os.remove(self.lock_file)
 
     def test_thread_lock(self):
         lock = ComboLock(self.lock_file)
@@ -56,3 +57,19 @@ class TestComboLock(TestCase):
 
         # Verify that the written order is correct
         self.assertEqual(result, 'ab')
+
+    def test_multi_lock_acquire(self):
+        results = dict()
+        _, lock_file = mkstemp()
+
+        def _test_acquire(idx):
+            lock = ComboLock(lock_file)
+            success = lock.acquire(False)
+            results[idx] = success
+
+        for i in range(0, 10):
+            Thread(target=_test_acquire, args=(i,), daemon=True).start()
+
+        while not len(results.keys()) == 10:
+            time.sleep(0.5)
+        self.assertEqual(len([lock for lock in results.values() if lock]), 1)
