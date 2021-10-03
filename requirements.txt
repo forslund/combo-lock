@@ -1,2 +1,2 @@
-fasteners~=0.16
+filelock~=3.2.0
 memory-tempfile
