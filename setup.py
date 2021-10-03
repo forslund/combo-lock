@@ -39,7 +39,7 @@ def required(requirements_file):
 
 setup(
     name='combo_lock',
-    version='0.1.2',
+    version='0.2.0',
     packages=['combo_lock'],
     package_data={
       '*': ['*.txt', '*.md']
