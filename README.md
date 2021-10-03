@@ -2,9 +2,9 @@
 
 The combo-lock is a combination of a process lock and a thread lock. Usable in cases both multiple threads and multiple processes are sharing the same resource such as a file in the file system.
 
-The module utilizes the InterProcessLock from [fasteners](https://pypi.org/project/fasteners/) and the standard *Lock* from threading.
+The module utilizes the FileLock from [filelock](https://pypi.org/project/filelock/) and the standard *Lock* from threading.
 
-The InterProcessLock uses a filesystem lock so the initialization of the class requires a path for the lock file.
+The FileLock uses a filesystem lock so the initialization of the class requires a path for the lock file.
 
 ## Example
 
