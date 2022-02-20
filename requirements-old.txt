@@ -1,0 +1,2 @@
+filelock~=3.2.1
+memory-tempfile
