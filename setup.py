@@ -21,6 +21,7 @@
 # under the License.
 
 import os
+import sys
 from setuptools import setup
 
 
@@ -28,7 +29,7 @@ with open("README.md", "r") as fh:
     long_desc = fh.read()
 
 
-def required(requirements_file):
+def load_requirements(requirements_file):
     """ Read requirements file and remove comments and empty lines. """
     base_dir = os.path.abspath(os.path.dirname(__file__))
     with open(os.path.join(base_dir, requirements_file), 'r') as f:
@@ -37,15 +38,23 @@ def required(requirements_file):
                 if pkg.strip() and not pkg.startswith("#")]
 
 
+def required():
+    """Load appropriate requirements file."""
+    if sys.version_info[:2] > (3, 6):
+        return load_requirements("requirements.txt")
+    else:
+        return load_requirements("requirements-old.txt")
+
+
 setup(
     name='combo_lock',
-    version='0.2.1',
+    version='0.2.2',
     packages=['combo_lock'],
     package_data={
       '*': ['*.txt', '*.md']
     },
     include_package_data=True,
-    install_requires=required('requirements.txt'),
+    install_requires=required(),
     url='https://github.com/forslund/combo-lock',
     license='Apache-2.0',
     author='Åke Forslund, JarbasAI',
