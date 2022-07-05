@@ -14,8 +14,8 @@
 #
 from base64 import b64encode
 from threading import Lock
-from os.path import exists, join
-from os import chmod
+from os.path import exists, join, dirname
+from os import chmod, makedirs
 from combo_lock.util import get_ram_directory
 from filelock import FileLock, Timeout
 
@@ -96,6 +96,14 @@ def _filename_from_name(name):
 class NamedLock(ComboLock):
     def __init__(self, name):
         filename = _filename_from_name(name)
-        path = join(get_ram_directory("combo_locks"), filename)
+        try:
+            path = join(get_ram_directory("combo_locks"), filename)
+        except Exception as e:
+            import logging
+            from tempfile import gettempdir
+            logging.getLogger("combo_lock").exception(e)
+            path = join(gettempdir(), "combo_locks", filename)
+            if not exists(dirname(path)):
+                makedirs(dirname(path), exist_ok=True)
         super().__init__(path)
         self.name = name
