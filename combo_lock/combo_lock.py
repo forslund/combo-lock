@@ -29,15 +29,24 @@ class ComboLock:
     def __init__(self, path):
         # Create lock file if it doesn't exist and set permissions for
         # all users to lock/unlock
-        if not exists(path):
-            f = open(path, 'w+')
-            f.close()
-            chmod(path, 0o777)
+        self.path = path
+        self._init_plock_file()
         self.plock = FileLock(path)
         self.tlock = Lock()
 
+    def _init_plock_file(self):
+        """
+        Create the lock file if it doesn't already exist
+        """
+        if not exists(self.path):
+            f = open(self.path, 'w+')
+            f.close()
+            chmod(self.path, 0o777)
+
     def acquire(self, blocking=True):
         """ Acquire lock, locks thread and process lock.
+
+        Lock-file is created if missing.
 
         Arguments:
             blocking(bool): Set's blocking mode of acquire operation.
@@ -45,6 +54,14 @@ class ComboLock:
 
         Returns: True if lock succeeded otherwise False
         """
+        try:
+            result = self._acquire(blocking)
+        except FileNotFoundError:
+            self._init_plock_file()
+            result = self._acquire(blocking)
+        return result
+
+    def _acquire(self, blocking):
         if not blocking:
             # Lock thread
             tlocked = self.tlock.acquire(blocking=False)
