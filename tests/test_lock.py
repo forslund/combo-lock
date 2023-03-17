@@ -1,4 +1,5 @@
 import os
+from os.path import isfile
 from subprocess import Popen
 from tempfile import mktemp, mkstemp
 from threading import Thread
@@ -74,3 +75,13 @@ class TestComboLock(TestCase):
         while not len(results.keys()) == 10:
             time.sleep(0.5)
         self.assertEqual(len([lock for lock in results.values() if lock]), 1)
+
+    def test_lock_file_missing(self):
+        _, lock_file = mkstemp()
+        lock = ComboLock(lock_file)
+        with lock:
+            self.assertTrue(isfile(lock.path))
+        os.remove(lock.path)
+        self.assertFalse(isfile(lock.path))
+        with lock:
+            self.assertTrue(isfile(lock.path))
