@@ -29,12 +29,19 @@ class ComboLock:
     def __init__(self, path):
         # Create lock file if it doesn't exist and set permissions for
         # all users to lock/unlock
-        if not exists(path):
-            f = open(path, 'w+')
-            f.close()
-            chmod(path, 0o777)
+        self.path = path
+        self._init_plock_file()
         self.plock = FileLock(path)
         self.tlock = Lock()
+
+    def _init_plock_file(self):
+        """
+        Create the lock file if it doesn't already exist
+        """
+        if not exists(self.path):
+            f = open(self.path, 'w+')
+            f.close()
+            chmod(self.path, 0o777)
 
     def acquire(self, blocking=True):
         """ Acquire lock, locks thread and process lock.
@@ -72,7 +79,11 @@ class ComboLock:
 
     def __enter__(self):
         """ Context handler, acquires lock in blocking mode. """
-        self.acquire()
+        try:
+            self.acquire()
+        except FileNotFoundError:
+            self._init_plock_file()
+            self.acquire()
         return self
 
     def __exit__(self, _type, value, traceback):
