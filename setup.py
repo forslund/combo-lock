@@ -48,7 +48,7 @@ def required():
 
 setup(
     name='combo_lock',
-    version='0.2.5',
+    version='0.2.6',
     packages=['combo_lock'],
     package_data={
       '*': ['*.txt', '*.md']
