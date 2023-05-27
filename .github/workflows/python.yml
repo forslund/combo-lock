@@ -11,7 +11,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -37,10 +37,37 @@ jobs:
     - name: Tests
       run: pytest tests
 
+  build-mac-os-x:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: ['3.11']
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install flake8 pytest
+        python setup.py install
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings.
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=79 --statistics
+    - name: Tests
+      run: pytest tests
+
+
   publish:
     runs-on: ubuntu-latest
     if: contains(github.ref, '/tags/v')
-    needs: build
+    needs: build-linux
     steps:
     - uses: actions/checkout@v3
     - name: Push to pypi
