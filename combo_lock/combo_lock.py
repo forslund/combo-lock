@@ -13,9 +13,8 @@
 # limitations under the License.
 #
 from base64 import b64encode
+from pathlib import Path
 from threading import Lock
-from os import chmod
-from os.path import exists, join, dirname
 from combo_lock.util import get_ram_directory, make_dir_with_global_permissions
 from filelock import FileLock, Timeout
 
@@ -30,7 +29,7 @@ class ComboLock:
     def __init__(self, path):
         # Create lock file if it doesn't exist and set permissions for
         # all users to lock/unlock
-        self.path = path
+        self.path = Path(path)
         self._init_plock_file()
         self.plock = FileLock(path, mode=LOCK_FILE_ACCESS_RIGHTS)
         self.tlock = Lock()
@@ -39,10 +38,10 @@ class ComboLock:
         """
         Create the lock file if it doesn't already exist
         """
-        if not exists(self.path):
+        if not self.path.exists():
             f = open(self.path, 'w+')
             f.close()
-            chmod(self.path, LOCK_FILE_ACCESS_RIGHTS)
+            self.path.chmod(LOCK_FILE_ACCESS_RIGHTS)
 
     def acquire(self, blocking=True):
         """ Acquire lock, locks thread and process lock.
@@ -115,13 +114,15 @@ class NamedLock(ComboLock):
     def __init__(self, name):
         filename = _filename_from_name(name)
         try:
-            path = join(get_ram_directory("combo_locks"), filename)
+            path = Path(get_ram_directory("combo_locks"), filename)
         except Exception as e:
             import logging
             from tempfile import gettempdir
             logging.getLogger("combo_lock").exception(e)
-            path = join(gettempdir(), "combo_locks", filename)
-            if not exists(dirname(path)):
-                make_dir_with_global_permissions(dirname(path))
+            path = Path(gettempdir(), "combo_locks", filename)
+            containing_folder = path.parents[0]
+            if not containing_folder.exists():
+                make_dir_with_global_permissions(containing_folder)
+
         super().__init__(path)
         self.name = name
