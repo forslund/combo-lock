@@ -3,6 +3,7 @@ from unittest import TestCase
 
 from combo_lock import NamedLock
 
+
 class TestNamedLock(TestCase):
     def test_simple_name(self):
         lock = NamedLock('test_lock')

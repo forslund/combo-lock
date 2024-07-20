@@ -20,6 +20,7 @@ class TestComboLock(TestCase):
     def test_thread_lock(self):
         lock = ComboLock(self.lock_file)
         call_order = []
+
         def thread_a():
             nonlocal call_order
             with lock:
