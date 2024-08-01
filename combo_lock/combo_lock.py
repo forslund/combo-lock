@@ -14,11 +14,12 @@
 #
 from base64 import b64encode
 from threading import Lock
+from os import chmod
 from os.path import exists, join, dirname
-from os import chmod, makedirs
-from combo_lock.util import get_ram_directory
+from combo_lock.util import get_ram_directory, make_dir_with_global_permissions
 from filelock import FileLock, Timeout
 
+LOCK_FILE_ACCESS_RIGHTS = 0o666
 
 class ComboLock:
     """ A combined process and thread lock.
@@ -31,7 +32,7 @@ class ComboLock:
         # all users to lock/unlock
         self.path = path
         self._init_plock_file()
-        self.plock = FileLock(path)
+        self.plock = FileLock(path, mode=LOCK_FILE_ACCESS_RIGHTS)
         self.tlock = Lock()
 
     def _init_plock_file(self):
@@ -41,7 +42,7 @@ class ComboLock:
         if not exists(self.path):
             f = open(self.path, 'w+')
             f.close()
-            chmod(self.path, 0o777)
+            chmod(self.path, LOCK_FILE_ACCESS_RIGHTS)
 
     def acquire(self, blocking=True):
         """ Acquire lock, locks thread and process lock.
@@ -121,6 +122,6 @@ class NamedLock(ComboLock):
             logging.getLogger("combo_lock").exception(e)
             path = join(gettempdir(), "combo_locks", filename)
             if not exists(dirname(path)):
-                makedirs(dirname(path), exist_ok=True)
+                make_dir_with_global_permissions(dirname(path))
         super().__init__(path)
         self.name = name
