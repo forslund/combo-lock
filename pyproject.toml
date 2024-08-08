@@ -10,6 +10,8 @@ authors = [
   {name = "JarbasAI", email = "jarbasai@mailfence.com"},
 ]
 
+dynamic = ["dependencies"]
+
 description = "A combined process and thread lock"
 readme = "README.md"
 
@@ -28,3 +30,7 @@ classifiers = [
 [project.urls]
 Repository = "https://github.com/forslund/combo-lock"
 Homepage = "https://github.com/forslund/combo-lock"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
