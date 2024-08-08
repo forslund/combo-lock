@@ -24,11 +24,6 @@ import os
 import sys
 from setuptools import setup
 
-
-with open("README.md", "r") as fh:
-    long_desc = fh.read()
-
-
 def load_requirements(requirements_file):
     """ Read requirements file and remove comments and empty lines. """
     base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -47,30 +42,10 @@ def required():
 
 
 setup(
-    name='combo_lock',
-    version='0.2.6',
     packages=['combo_lock'],
     package_data={
       '*': ['*.txt', '*.md']
     },
     include_package_data=True,
     install_requires=required(),
-    url='https://github.com/forslund/combo-lock',
-    license='Apache-2.0',
-    author='Åke Forslund, JarbasAI',
-    author_email='ake.forslund@gmail.com, '
-                 'jarbasai@mailfence.com',
-    description='A combined process and thread lock',
-    long_description=long_desc,
-    long_description_content_type="text/markdown",
-    classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
-
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-    ]
 )
