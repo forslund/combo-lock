@@ -1,7 +1,8 @@
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-from combo_lock.util import get_ram_directory
+from combo_lock.util import get_ram_directory, make_dir_with_global_permissions
 
 
 class TestComboLock(TestCase):
@@ -10,3 +11,20 @@ class TestComboLock(TestCase):
         assert ram_dir is not None
         access_rights = 0o777
         assert Path(ram_dir).stat().st_mode & access_rights == access_rights
+
+    def test_make_dir_with_global_permissions_allows_existing_directory(self):
+        with TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir, "combo_locks")
+            path.mkdir()
+
+            make_dir_with_global_permissions(path)
+
+            assert path.is_dir()
+
+    def test_make_dir_with_global_permissions_rejects_existing_file(self):
+        with TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir, "combo_locks")
+            path.write_text("not a directory")
+
+            with self.assertRaises(FileExistsError):
+                make_dir_with_global_permissions(path)
