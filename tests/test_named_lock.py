@@ -25,5 +25,4 @@ class TestNamedLock(TestCase):
         lock_path = Path(lock.path)
         access_rights = 0o666
         with lock:
-            pass
-        assert Path(lock_path).stat().st_mode & access_rights == access_rights
+            assert Path(lock_path).stat().st_mode & access_rights == access_rights

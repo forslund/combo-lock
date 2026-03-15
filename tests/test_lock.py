@@ -82,7 +82,6 @@ class TestComboLock(TestCase):
         lock = ComboLock(lock_file)
         with lock:
             self.assertTrue(isfile(lock.path))
-        os.remove(lock.path)
         self.assertFalse(isfile(lock.path))
         with lock:
             self.assertTrue(isfile(lock.path))
