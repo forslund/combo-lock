@@ -77,5 +77,6 @@ jobs:
       run: |
         pip install twine
         pip install build 
+        pip install -U packaging
         python -m build
         twine upload dist/*.tar.gz
