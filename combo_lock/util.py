@@ -8,8 +8,13 @@ from memory_tempfile import MemoryTempfile
 def make_dir_with_global_permissions(path):
     """ Create directory and allow all to read/write to it. """
     path = Path(path)  # Handle string input
-    if not path.exists():
+    try:
         path.mkdir(parents=True)
+    except FileExistsError as err:
+        if path.is_dir():
+            return
+        raise FileExistsError(path) from err
+    else:
         path.chmod(0o777)
 
 
