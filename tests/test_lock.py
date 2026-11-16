@@ -82,6 +82,9 @@ class TestComboLock(TestCase):
         lock = ComboLock(lock_file)
         with lock:
             self.assertTrue(isfile(lock.path))
-        self.assertFalse(isfile(lock.path))
+        # Some filelock releases delete the lock file on release and others
+        # keep it, so remove it here to test the missing-file case.
+        if isfile(lock.path):
+            os.remove(lock.path)
         with lock:
             self.assertTrue(isfile(lock.path))
